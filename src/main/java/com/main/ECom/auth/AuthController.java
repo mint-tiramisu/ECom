@@ -30,7 +30,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> signUp(@Valid @RequestBody SignUpRequest signUpRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String error = bindingResult.getFieldError().getDefaultMessage();
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(error != null ? new AuthResponse(error, null) : null);
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.signUp(signUpRequest));
     }
@@ -39,7 +39,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String error = bindingResult.getFieldError().getDefaultMessage();
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(error != null ? new AuthResponse(error, null) : null);
         }
         return ResponseEntity.ok(authService.login(loginRequest));
     }

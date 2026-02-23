@@ -24,6 +24,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse signUp(SignUpRequest signUpRequest) {
+        log.info("Attempting to sign up user: {}", signUpRequest.email());
         String normalizedEmail = signUpRequest.email().trim().toLowerCase();
         if (authUserRepository.existsByEmail(normalizedEmail)) {
             throw new IllegalArgumentException("Email is already registered");
