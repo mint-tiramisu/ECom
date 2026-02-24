@@ -36,14 +36,6 @@ public class AuthSecurityConfig {
     }
 
     @Bean
-    public RoleHierarchy roleHierarchy() {
-        return RoleHierarchyImpl.fromHierarchy(
-                RoleEnum.ADMIN.name() + " > " + RoleEnum.VENDOR.name() + "\n" +
-                RoleEnum.VENDOR.name() + " > " + RoleEnum.USER.name()
-        );
-    }
-
-    @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());

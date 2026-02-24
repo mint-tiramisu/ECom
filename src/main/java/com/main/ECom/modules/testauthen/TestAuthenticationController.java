@@ -30,17 +30,21 @@ public class TestAuthenticationController {
     public ResponseEntity<ApiResponse<String>> protectedEndpoint(Authentication authentication) {
         String username = authentication.getName();
         log.info("Protected endpoint accessed by user: {}", username);
-        return ResponseEntity.ok(ApiResponse.success("Protected endpoint accessed", 
-            "Hello " + username + ", you are authenticated"));
+        return ResponseEntity.ok(ApiResponse.success("Protected endpoint accessed",
+                "Hello " + username + ", you are authenticated"));
     }
 
     @GetMapping("/user-only")
-    @PreAuthorize("hasAuthority(T(com.main.ECom.auth.RoleConstants).USER)")
+    @PreAuthorize("hasAnyAuthority(T(com.main.ECom.auth.RoleConstants).USER, T(com.main.ECom.auth.RoleConstants).ADMIN, T(com.main.ECom.auth.RoleConstants).VENDOR)")
     public ResponseEntity<ApiResponse<String>> userOnlyEndpoint(Authentication authentication) {
         String username = authentication.getName();
+        String role = authentication.getAuthorities().stream()
+                .map(auth -> auth.getAuthority())
+                .findFirst()
+                .orElse("UNKNOWN");
         log.info("User-only endpoint accessed by: {}", username);
-        return ResponseEntity.ok(ApiResponse.success("User role confirmed", 
-            "You have USER role: " + username));
+        return ResponseEntity.ok(ApiResponse.success("User role confirmed",
+                "You have USER role: " + username + " with role: " + role));
     }
 
     @GetMapping("/admin-only")
@@ -48,8 +52,8 @@ public class TestAuthenticationController {
     public ResponseEntity<ApiResponse<String>> adminOnlyEndpoint(Authentication authentication) {
         String username = authentication.getName();
         log.info("Admin-only endpoint accessed by: {}", username);
-        return ResponseEntity.ok(ApiResponse.success("Admin role confirmed", 
-            "You have ADMIN role: " + username));
+        return ResponseEntity.ok(ApiResponse.success("Admin role confirmed",
+                "You have ADMIN role: " + username));
     }
 
     @GetMapping("/vendor-only")
@@ -57,8 +61,8 @@ public class TestAuthenticationController {
     public ResponseEntity<ApiResponse<String>> vendorOnlyEndpoint(Authentication authentication) {
         String username = authentication.getName();
         log.info("Vendor-only endpoint accessed by: {}", username);
-        return ResponseEntity.ok(ApiResponse.success("Vendor role confirmed", 
-            "You have VENDOR role: " + username));
+        return ResponseEntity.ok(ApiResponse.success("Vendor role confirmed",
+                "You have VENDOR role: " + username));
     }
 
     @GetMapping("/current-user")
@@ -68,13 +72,14 @@ public class TestAuthenticationController {
                 .map(auth -> auth.getAuthority())
                 .findFirst()
                 .orElse("UNKNOWN");
-        
+
         UserInfoResponse userInfo = new UserInfoResponse(username, role);
         log.info("Current user info requested for: {}", username);
         return ResponseEntity.ok(ApiResponse.success("User information retrieved", userInfo));
     }
 
-    record UserInfoResponse(String email, String role) {}
+    record UserInfoResponse(String email, String role) {
+    }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleUnauthorized(BadCredentialsException exception) {
