@@ -2,39 +2,37 @@ package com.main.ECom.auth;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "auth_users")
+@Table(name = "roles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthUser {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
-    private String email;
+    private RoleEnum name;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Password is required")
-    private String password;
+    public Role(RoleEnum name) {
+        this.name = name;
+    }
 
-    public AuthUser(String email, String password) {
-        this.email = email;
-        this.password = password;
+    public enum RoleEnum {
+        USER, ADMIN, VENDOR
     }
 }
