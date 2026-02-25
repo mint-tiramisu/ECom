@@ -8,16 +8,12 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.main.ECom.auth.Role.RoleEnum;
 
 import lombok.RequiredArgsConstructor;
 
@@ -57,8 +53,9 @@ public class AuthSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/test/public").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(Customizer.withDefaults());
+                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                // For JWT-only APIs, keeping httpBasic disabled is the right choice.
+                // .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
